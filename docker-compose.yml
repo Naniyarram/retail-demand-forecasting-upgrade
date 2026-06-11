@@ -1,0 +1,17 @@
+services:
+  forecasting-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: retail-forecasting-api
+    ports:
+      - "8000:8000"
+    volumes:
+      # Provide the trained champion model and outputs from the host
+      - ./artifacts:/app/artifacts
+      # Provide Walmart CSVs (read-only) for any in-container retraining
+      - ./data:/app/data:ro
+    env_file:
+      - .env
+    environment:
+      - MLFLOW_TRACKING_URI=sqlite:///mlflow.db

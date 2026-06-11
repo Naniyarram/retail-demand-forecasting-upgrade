@@ -1,0 +1,53 @@
+name: Retail Forecasting CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+
+  test:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Upgrade Pip
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Verify Core Imports
+        run: |
+          python -c "from pipeline.forecasting.sarima import SARIMAForecaster"
+          python -c "from pipeline.forecasting.prophet import ProphetForecaster"
+          python -c "from pipeline.forecasting.xgboost import XGBoostForecaster"
+
+      - name: Run Unit Tests
+        run: |
+          pytest tests/ -v
+
+      - name: Build Docker Image
+        run: |
+          docker build -t retail-demand-forecasting-api:ci .
