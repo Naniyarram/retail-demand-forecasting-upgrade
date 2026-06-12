@@ -10,13 +10,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from pipeline.training.champion_trainer import (
-    ChampionTrainer
-)
+from pipeline.training.champion_trainer import (ChampionTrainer)
 
-from pipeline.forecasting.sarima import (
-    SARIMAForecaster
-)
+from pipeline.forecasting.sarima import ( SARIMAForecaster)
 
 
 @pytest.fixture(
@@ -48,17 +44,10 @@ def sample_data():
         )
     )
 
-    return pd.DataFrame(
-        {
-            "Date": dates,
-            "Weekly_Sales": sales
-        }
-    )
+    return pd.DataFrame( {"Date": dates,"Weekly_Sales": sales})
 
 
-@pytest.fixture(
-    scope="module"
-)
+@pytest.fixture(scope="module")
 def champion_result(sample_data):
     """
     Create mock champion result.
@@ -78,10 +67,7 @@ def champion_result(sample_data):
     }
 
 
-def test_retrain_champion(
-    champion_result,
-    sample_data
-):
+def test_retrain_champion(champion_result,sample_data):
     """
     Verify retraining works.
     """
@@ -99,20 +85,14 @@ def test_retrain_champion(
     assert retrained_model.is_trained is True
 
 
-def test_get_champion_summary(
-    champion_result
-):
+def test_get_champion_summary(champion_result):
     """
     Verify summary generation.
     """
 
     trainer = ChampionTrainer()
 
-    summary = (
-        trainer.get_champion_summary(
-            champion_result
-        )
-    )
+    summary = (trainer.get_champion_summary( champion_result  ))
 
     expected_keys = [
         "model_name",
@@ -137,10 +117,7 @@ def test_summary_values(
     trainer = ChampionTrainer()
 
     summary = (
-        trainer.get_champion_summary(
-            champion_result
-        )
-    )
+        trainer.get_champion_summary( champion_result ) )
 
     assert (
         summary["model_name"]
@@ -163,19 +140,14 @@ def test_summary_values(
     )
 
 
-def test_print_champion_summary(
-    champion_result,
-    capsys
-):
+def test_print_champion_summary(champion_result, capsys):
     """
     Verify summary printing.
     """
 
     trainer = ChampionTrainer()
 
-    trainer.print_champion_summary(
-        champion_result
-    )
+    trainer.print_champion_summary(champion_result)
 
     captured = (
         capsys.readouterr()
