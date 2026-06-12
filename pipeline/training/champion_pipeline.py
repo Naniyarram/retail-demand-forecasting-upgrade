@@ -10,7 +10,6 @@ Responsibilities
 3. Model Logging
 4. Model URI Generation
 
-Author: Nani
 """
 
 from typing import Dict
@@ -19,17 +18,11 @@ from typing import Any
 import pandas as pd
 import mlflow
 
-from pipeline.training.champion_trainer import (
-    ChampionTrainer
-)
+from pipeline.training.champion_trainer import (ChampionTrainer)
 
-from pipeline.training.model_logger import (
-    ModelLogger
-)
+from pipeline.training.model_logger import (ModelLogger)
 
-from pipeline.training.model_packager import (
-    ModelPackager
-)
+from pipeline.training.model_packager import (ModelPackager)
 
 
 class ChampionPipeline:
@@ -45,11 +38,7 @@ class ChampionPipeline:
 
         self.packager = ModelPackager()
 
-    def run(
-        self,
-        champion_result: Dict[str, Any],
-        full_dataset: pd.DataFrame
-    ) -> Dict[str, Any]:
+    def run(self,champion_result: Dict[str, Any],full_dataset: pd.DataFrame) -> Dict[str, Any]:
         """
         Execute champion workflow.
 
@@ -65,32 +54,22 @@ class ChampionPipeline:
         dict
         """
 
-        # ---------------------------------
         # Retrain Champion
-        # ---------------------------------
+     
         model_name = champion_result["model_name"]
         print(f"\n[INFO] Retraining champion model ({model_name}) on full dataset...")
 
-        production_model = (
-            self.trainer.retrain_champion(
-                champion_result=champion_result,
-                full_dataset=full_dataset
-            )
-        )
+        production_model = (self.trainer.retrain_champion( champion_result=champion_result,full_dataset=full_dataset ))
 
-        # ---------------------------------
+    
         # Generate Summary
-        # ---------------------------------
+  
 
-        champion_summary = (
-            self.trainer.get_champion_summary(
-                champion_result
-            )
-        )
+        champion_summary = (self.trainer.get_champion_summary(champion_result) )
 
-        # ---------------------------------
+
         # Log Metadata
-        # ---------------------------------
+        
         print(f"[INFO] Saving and packaging retrained champion model...")
 
         package_result = (
@@ -103,9 +82,9 @@ class ChampionPipeline:
             )
         )
 
-        # ---------------------------------
+
         # Create MLflow URI
-        # ---------------------------------
+
         print(f"[INFO] Registering champion model in MLflow tracking server...")
 
         try:
@@ -122,43 +101,19 @@ class ChampionPipeline:
                         champion_summary
                     )
 
-                    model_uri = (
-                        self.logger.log_model(
-                            model_name=champion_result[
-                                "model_name"
-                            ],
-                            model_object=production_model,
-                            metadata=champion_summary
-                        )
-                    )
+                    model_uri = (self.logger.log_model(model_name=champion_result[ "model_name"],model_object=production_modelmetadata=champion_summary))
 
             else:
 
-                self.logger.log_champion_metadata(
-                    champion_summary
-                )
+                self.logger.log_champion_metadata(champion_summary)
 
-                model_uri = (
-                    self.logger.log_model(
-                        model_name=champion_result[
-                            "model_name"
-                        ],
-                        model_object=production_model,
-                        metadata=champion_summary
-                    )
-                )
+                model_uri = ( self.logger.log_model(model_name=champion_result["model_name"], model_object=production_model, metadata=champion_summary ) )
 
         except Exception as exc:
 
-            print(
-                "[WARNING] MLflow logging skipped: "
-                f"{exc}"
-            )
+            print("[WARNING] MLflow logging skipped: "f"{exc}")
 
-            model_uri = (
-                "local:"
-                f"{package_result['artifact_path']}"
-            )
+            model_uri = ( "local:" f"{package_result['artifact_path']}" )
 
         return {
 
@@ -183,10 +138,7 @@ class ChampionPipeline:
                 package_result["metadata_path"]
         }
 
-    def print_results(
-        self,
-        pipeline_result: Dict[str, Any]
-    ) -> None:
+    def print_results( self,pipeline_result: Dict[str, Any] ) -> None:
         """
         Display pipeline results.
         """
@@ -196,17 +148,8 @@ class ChampionPipeline:
         print("CHAMPION PIPELINE")
         print("=" * 60)
 
-        print(
-            f"Model      : "
-            f"{pipeline_result['model_name']}"
-        )
+        print( f"Model      : "f"{pipeline_result['model_name']}")
 
-        print(
-            f"Model URI  : "
-            f"{pipeline_result['model_uri']}"
-        )
+        print(f"Model URI  : "f"{pipeline_result['model_uri']}" )
 
-        print(
-            f"Artifact   : "
-            f"{pipeline_result['artifact_path']}"
-        )
+        print( f"Artifact   : "f"{pipeline_result['artifact_path']}")
