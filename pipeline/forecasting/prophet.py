@@ -20,14 +20,9 @@ import joblib
 
 from prophet import Prophet
 
-from pipeline.config.settings import (
-    TARGET_COLUMN,
-    DATE_COLUMN
-)
+from pipeline.config.settings import ( TARGET_COLUMN, DATE_COLUMN)
 
-from pipeline.forecasting.base_forecaster import (
-    BaseForecaster
-)
+from pipeline.forecasting.base_forecaster import ( BaseForecaster)
 
 
 class ProphetForecaster(BaseForecaster):
@@ -42,11 +37,7 @@ class ProphetForecaster(BaseForecaster):
     internally.
     """
 
-    def __init__(
-        self,
-        yearly_seasonality: bool = True,
-        seasonality_mode: str = "multiplicative"
-    ):
+    def __init__(self, yearly_seasonality: bool = True, seasonality_mode: str = "multiplicative"):
         super().__init__()
 
         self.model_name = "Prophet"
@@ -57,23 +48,13 @@ class ProphetForecaster(BaseForecaster):
 
         self.fitted_model = None
 
-    def _prepare_prophet_dataframe(
-        self,
-        df: pd.DataFrame
-    ) -> pd.DataFrame:
+    def _prepare_prophet_dataframe(self,df: pd.DataFrame) -> pd.DataFrame:
         """
         Convert project schema
         into Prophet schema.
         """
 
-        return (
-            df[
-                [
-                    DATE_COLUMN,
-                    TARGET_COLUMN
-                ]
-            ]
-            .rename(
+        return (df[  [DATE_COLUMN,TARGET_COLUMN ]  ].rename(
                 columns={
                     DATE_COLUMN: "ds",
                     TARGET_COLUMN: "y"
@@ -82,17 +63,12 @@ class ProphetForecaster(BaseForecaster):
             .copy()
         )
 
-    def fit(
-        self,
-        train_df: pd.DataFrame
-    ) -> None:
+    def fit(self,train_df: pd.DataFrame ) -> None:
         """
         Train Prophet model.
         """
 
-        prophet_df = self._prepare_prophet_dataframe(
-            train_df
-        )
+        prophet_df = self._prepare_prophet_dataframe(train_df )
 
         self.fitted_model = Prophet(
             yearly_seasonality=self.yearly_seasonality,
@@ -109,10 +85,7 @@ class ProphetForecaster(BaseForecaster):
 
         self.is_trained = True
 
-    def predict(
-        self,
-        horizon: int
-    ):
+    def predict( self, horizon: int  ):
         """
         Forecast future periods.
         """
@@ -139,10 +112,7 @@ class ProphetForecaster(BaseForecaster):
 
         return predictions
 
-    def save_model(
-        self,
-        path: str
-    ) -> None:
+    def save_model(self,path: str ) -> None:
         """
         Save trained model.
         """
@@ -162,10 +132,7 @@ class ProphetForecaster(BaseForecaster):
             path
         )
 
-    def load_model(
-        self,
-        path: str
-    ) -> None:
+    def load_model(  self,  path: str) -> None:
         """
         Load trained model.
         """
@@ -178,9 +145,7 @@ class ProphetForecaster(BaseForecaster):
 
         self.is_trained = True
 
-    def get_params(
-        self
-    ) -> Dict[str, Any]:
+    def get_params(self) -> Dict[str, Any]:
         """
         Return model metadata.
 
