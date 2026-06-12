@@ -3,7 +3,6 @@ drift_detector.py
 
 Statistical data drift monitoring using Kolmogorov-Smirnov tests.
 
-Author: Nani
 """
 
 from typing import Dict, Any, List
@@ -19,12 +18,7 @@ class DataDriftDetector:
     def __init__(self, alpha: float = 0.05):
         self.alpha = alpha
 
-    def detect_drift(
-        self,
-        baseline_df: pd.DataFrame,
-        current_df: pd.DataFrame,
-        columns: List[str]
-    ) -> Dict[str, Any]:
+    def detect_drift(self,baseline_df: pd.DataFrame,current_df: pd.DataFrame,columns: List[str]) -> Dict[str, Any]:
         """
         Run Kolmogorov-Smirnov test on selected columns to identify drift.
         """
