@@ -10,20 +10,13 @@ Responsibilities
 - Support retraining workflows
 - Support deployment workflows
 
-Author: Nani
 """
 
-from pipeline.forecasting.sarima import (
-    SARIMAForecaster
-)
+from pipeline.forecasting.sarima import (SARIMAForecaster)
 
-from pipeline.forecasting.prophet import (
-    ProphetForecaster
-)
+from pipeline.forecasting.prophet import ( ProphetForecaster)
 
-from pipeline.forecasting.xgboost import (
-    XGBoostForecaster
-)
+from pipeline.forecasting.xgboost import ( XGBoostForecaster)
 
 
 class ModelFactory:
@@ -38,11 +31,7 @@ class ModelFactory:
     }
 
     @classmethod
-    def create_model(
-        cls,
-        model_name: str,
-        **kwargs
-    ):
+    def create_model(cls,model_name: str,**kwargs):
         """
         Create forecasting model.
 
@@ -57,28 +46,16 @@ class ModelFactory:
 
         if model_name not in cls.SUPPORTED_MODELS:
 
-            raise ValueError(
-                f"Unsupported model: {model_name}"
-            )
+            raise ValueError(f"Unsupported model: {model_name}")
 
-        model_class = (
-            cls.SUPPORTED_MODELS[
-                model_name
-            ]
-        )
+        model_class = (cls.SUPPORTED_MODELS[ model_name])
 
-        return model_class(
-            **kwargs
-        )
+        return model_class( **kwargs)
 
     @classmethod
-    def list_models(
-        cls
-    ):
+    def list_models(cls ):
         """
         Return supported models.
         """
 
-        return list(
-            cls.SUPPORTED_MODELS.keys()
-        )
+        return list(cls.SUPPORTED_MODELS.keys())
