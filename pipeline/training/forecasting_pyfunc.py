@@ -11,7 +11,6 @@ Responsibilities
 - Enable MLflow model logging
 - Support Model Registry
 
-Author: Nani
 """
 
 from typing import Any
@@ -20,9 +19,7 @@ import pandas as pd
 import mlflow.pyfunc
 
 
-class ForecastingPyFuncModel(
-    mlflow.pyfunc.PythonModel
-):
+class ForecastingPyFuncModel(mlflow.pyfunc.PythonModel):
     """
     Generic forecasting wrapper.
 
@@ -32,19 +29,10 @@ class ForecastingPyFuncModel(
     - XGBoost
     """
 
-    def __init__(
-        self,
-        forecasting_model: Any
-    ):
-        self.forecasting_model = (
-            forecasting_model
-        )
+    def __init__( self,forecasting_model: Any):
+        self.forecasting_model = (forecasting_model)
 
-    def predict(
-        self,
-        context,
-        model_input: pd.DataFrame
-    ):
+    def predict( self, context, model_input: pd.DataFram):
         """
         MLflow prediction entrypoint.
 
@@ -68,24 +56,10 @@ class ForecastingPyFuncModel(
 
         if "horizon" not in model_input.columns:
 
-            raise ValueError(
-                "model_input must contain "
-                "'horizon' column."
-            )
+            raise ValueError( "model_input must contain ""'horizon' column." )
 
-        horizon = int(
-            model_input.iloc[0]["horizon"]
-        )
+        horizon = int( model_input.iloc[0]["horizon"] )
 
-        predictions = (
-            self.forecasting_model.predict(
-                horizon=horizon
-            )
-        )
+        predictions = (self.forecasting_model.predict(horizon=horizon))
 
-        return pd.DataFrame(
-            {
-                "forecast":
-                    predictions
-            }
-        )
+        return pd.DataFrame({ "forecast": predictions} )
