@@ -48,10 +48,7 @@ class DummyForecastService:
         return [1.0] * forecast_horizon
 
 
-def test_health_endpoint(
-    monkeypatch
-):
-
+def test_health_endpoint(monkeypatch):
     monkeypatch.setattr(
         api_app,
         "forecast_service",
@@ -70,9 +67,7 @@ def test_health_endpoint(
     assert response.json()["model_loaded"] is True
 
 
-def test_forecast_endpoint(
-    monkeypatch
-):
+def test_forecast_endpoint(monkeypatch):
 
     monkeypatch.setattr(
         api_app,
@@ -80,12 +75,9 @@ def test_forecast_endpoint(
         DummyForecastService()
     )
 
-    client = TestClient(
-        api_app.app
-    )
+    client = TestClient(api_app.app)
 
-    response = client.post(
-        "/forecast",
+    response = client.post("/forecast",
         json={
             "store_id": 1,
             "department_id": 1,
