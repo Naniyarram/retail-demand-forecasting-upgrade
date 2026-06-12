@@ -3,7 +3,6 @@ retrain.py
 
 Automated retraining pipeline based on data drift checks.
 
-Author: Nani
 """
 
 from typing import Dict, Any, List
@@ -22,23 +21,12 @@ class AutomatedRetrainer:
         self.detector = DataDriftDetector(alpha=significance_level)
         self.pipeline = ChampionPipeline()
 
-    def run_retraining_check(
-        self,
-        baseline_df: pd.DataFrame,
-        current_df: pd.DataFrame,
-        drift_columns: List[str],
-        champion_result: Dict[str, Any],
-        force: bool = False
-    ) -> Dict[str, Any]:
+    def run_retraining_check(self,baseline_df: pd.DataFrame,current_df: pd.DataFrame,drift_columns: List[str],champion_result: Dict[str, Any],force: bool = False) -> Dict[str, Any]:
         """
         Check for drift. If detected (or if forced), retrain the champion model.
         """
         # Run drift detection
-        drift_report = self.detector.detect_drift(
-            baseline_df=baseline_df,
-            current_df=current_df,
-            columns=drift_columns
-        )
+        drift_report = self.detector.detect_drift(baseline_df=baseline_df,current_df=current_df,columns=drift_columns)
 
         drift_detected = drift_report["drift_detected"]
         triggered = bool(drift_detected or force)
@@ -56,10 +44,7 @@ class AutomatedRetrainer:
             print(f"[INFO] {message}")
             
             # Run the Champion Pipeline on the updated/current dataset
-            pipeline_output = self.pipeline.run(
-                champion_result=champion_result,
-                full_dataset=current_df
-            )
+            pipeline_output = self.pipeline.run(champion_result=champion_result,full_dataset=current_df)
         else:
             print(f"[INFO] {message}")
 
