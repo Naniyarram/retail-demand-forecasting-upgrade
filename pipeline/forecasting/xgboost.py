@@ -22,19 +22,11 @@ import pandas as pd
 
 from xgboost import XGBRegressor
 
-from pipeline.config.settings import (
-    TARGET_COLUMN,
-    DATE_COLUMN,
-    RANDOM_STATE
-)
+from pipeline.config.settings import (TARGET_COLUMN,DATE_COLUMN, RANDOM_STATE)
 
-from pipeline.forecasting.base_forecaster import (
-    BaseForecaster
-)
+from pipeline.forecasting.base_forecaster import ( BaseForecaster)
 
-from pipeline.preprocessing.feature_engineering import (
-    FeatureEngineer
-)
+from pipeline.preprocessing.feature_engineering import ( FeatureEngineer)
 
 
 class XGBoostForecaster(BaseForecaster):
@@ -42,14 +34,7 @@ class XGBoostForecaster(BaseForecaster):
     XGBoost forecasting model.
     """
 
-    def __init__(
-        self,
-        n_estimators: int = 500,
-        learning_rate: float = 0.05,
-        max_depth: int = 6,
-        subsample: float = 0.8,
-        colsample_bytree: float = 0.8
-    ):
+    def __init__(self, n_estimators: int = 500, learning_rate: float = 0.05, max_depth: int = 6, subsample: float = 0.8, colsample_bytree: float = 0.8):
         super().__init__()
 
         self.model_name = "XGBoost"
@@ -68,10 +53,7 @@ class XGBoostForecaster(BaseForecaster):
 
         self.fitted_model = None
 
-    def fit(
-        self,
-        train_df: pd.DataFrame
-    ) -> None:
+    def fit(self,train_df: pd.DataFrame) -> None:
         """
         Train XGBoost model.
         """
@@ -116,10 +98,7 @@ class XGBoostForecaster(BaseForecaster):
 
         self.is_trained = True
 
-    def predict(
-        self,
-        horizon: int
-    ) -> np.ndarray:
+    def predict(self, horizon: int ) -> np.ndarray:
         """
         Recursive forecasting.
 
@@ -129,14 +108,9 @@ class XGBoostForecaster(BaseForecaster):
         """
 
         if not self.is_trained:
-            raise RuntimeError(
-                "Model has not been trained."
-            )
+            raise RuntimeError( "Model has not been trained." )
 
-        history = (
-            self.training_data.copy()
-            .reset_index(drop=True)
-        )
+        history = (self.training_data.copy() .reset_index(drop=True))
 
         predictions = []
 
@@ -175,26 +149,13 @@ class XGBoostForecaster(BaseForecaster):
             )
 
             new_row = pd.DataFrame(
-                {
-                    DATE_COLUMN: [next_date],
-                    TARGET_COLUMN: [pred]
-                }
-            )
+                {  DATE_COLUMN: [next_date],      TARGET_COLUMN: [pred]  }   )
 
-            history = pd.concat(
-                [
-                    history,
-                    new_row
-                ],
-                ignore_index=True
-            )
+            history = pd.concat( [     history, new_row],ignore_index=True)
 
         return np.array(predictions)
 
-    def save_model(
-        self,
-        path: str
-    ) -> None:
+    def save_model( self,  path: str ) -> None:
         """
         Save trained model.
         """
@@ -221,10 +182,7 @@ class XGBoostForecaster(BaseForecaster):
             path
         )
 
-    def load_model(
-        self,
-        path: str
-    ) -> None:
+    def load_model(self, path: str) -> None:
         """
         Load trained model.
         """
@@ -233,21 +191,15 @@ class XGBoostForecaster(BaseForecaster):
 
         self.fitted_model = package["model"]
 
-        self.feature_columns = (
-            package["feature_columns"]
-        )
+        self.feature_columns = (package["feature_columns"])
 
-        self.training_data = (
-            package["training_data"]
-        )
+        self.training_data = ( package["training_data"] )
 
         self.model = self.fitted_model
 
         self.is_trained = True
 
-    def get_params(
-        self
-    ) -> Dict[str, Any]:
+    def get_params( self) -> Dict[str, Any]:
         """
         Return model metadata.
 
