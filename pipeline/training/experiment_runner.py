@@ -14,11 +14,9 @@ Future:
 - Model Registry
 - CI/CD
 
-Author: Nani
+
 """
-from pipeline.training.mlflow_manager import (
-    MLflowManager
-)
+from pipeline.training.mlflow_manager import MLflowManager)
 from typing import List
 from typing import Dict
 from typing import Any
@@ -26,14 +24,9 @@ from typing import Any
 import pandas as pd
 import numpy as np
 
-from pipeline.config.settings import (
-    FORECAST_HORIZON,
-    PRIMARY_METRIC
-)
+from pipeline.config.settings import (FORECAST_HORIZON,PRIMARY_METRIC)
 
-from pipeline.evaluation.walk_forward import (
-    WalkForwardValidator
-)
+from pipeline.evaluation.walk_forward import (WalkForwardValidator)
 
 
 class ExperimentRunner:
@@ -41,13 +34,7 @@ class ExperimentRunner:
     Multi-model experimentation framework.
     """
 
-    def __init__(
-        self,
-        models,
-        forecast_horizon=FORECAST_HORIZON,
-        primary_metric=PRIMARY_METRIC,
-        mlflow_manager: MLflowManager | None = None
-    ):
+    def __init__(self,models,forecast_horizon=FORECAST_HORIZON,primary_metric=PRIMARY_METRIC,mlflow_manager: MLflowManager | None = None):
 
         self.models = models
 
@@ -57,19 +44,13 @@ class ExperimentRunner:
 
         self.mlflow_manager = mlflow_manager
 
-        self.validator = WalkForwardValidator(
-            forecast_horizon=forecast_horizon
-        )
+        self.validator = WalkForwardValidator(forecast_horizon=forecast_horizon)
 
         self.results = []
 
         self.leaderboard = None
 
-    def run_model(
-        self,
-        model,
-        data: pd.DataFrame
-    ) -> Dict[str, Any]:
+    def run_model( self,model,data: pd.DataFrame) -> Dict[str, Any]:
         """
         Run walk-forward validation
         for a single model.
@@ -80,82 +61,39 @@ class ExperimentRunner:
 
         fold_metrics = []
 
-        for fold_number, (
-            train_idx,
-            test_idx
-        ) in enumerate(
+        for fold_number, (train_idx,test_idx ) in enumerate(
             self.validator.split(data),
             start=1
         ):
             print(f"  +- Fold {fold_number}/{self.validator.n_splits} - Training and evaluating...")
 
-            train_df = (
-                data.iloc[train_idx]
-                .copy()
-            )
+            train_df = (data.iloc[train_idx] .copy())
 
-            test_df = (
-                data.iloc[test_idx]
-                .copy()
-            )
+            test_df = ( data.iloc[test_idx].copy() )
 
             model.fit(train_df)
 
-            predictions = model.predict(
-                horizon=len(test_df)
-            )
+            predictions = model.predict(    horizon=len(test_df))
 
-            metrics = model.evaluate(
-                y_true=test_df["Weekly_Sales"],
-                y_pred=predictions
-            )
+            metrics = model.evaluate(y_true=test_df["Weekly_Sales"],y_pred=predictions)
 
             metrics["fold"] = fold_number
 
-            fold_metrics.append(
-                metrics
-            )
+            fold_metrics.append( metrics)
+        fold_df = pd.DataFrame(  fold_metrics  )
 
-        fold_df = pd.DataFrame(
-            fold_metrics
-        )
+        result = {"model_name":model_name,  "RMSE":fold_df["RMSE"].mean(), "MAE": fold_df["MAE"].mean(),"MAPE": fold_df["MAPE"].mean(),
 
-        result = {
-
-            "model_name":
-                model_name,
-
-            "RMSE":
-                fold_df["RMSE"].mean(),
-
-            "MAE":
-                fold_df["MAE"].mean(),
-
-            "MAPE":
-                fold_df["MAPE"].mean(),
-
-            "fold_results":
-                fold_df,
-
-            "parameters":
-                model.get_params(),
-                
-            "model_object": model,
-        }
+            "fold_results":  fold_df,"parameters": model.get_params(),"model_object": model,}
 
         print(f"  +- Completed: Mean MAPE = {result['MAPE']:.4f} | Mean RMSE = {result['RMSE']:.4f}")
 
 
         if self.mlflow_manager:
 
-            with self.mlflow_manager.start_run(
-            run_name=model.get_model_name(),
-            nested=True
-            ):
+            with self.mlflow_manager.start_run(run_name=model.get_model_name(),nested=True):
 
-                self.mlflow_manager.log_params(
-                    model.get_params()
-                )
+                self.mlflow_manager.log_params(model.get_params())
 
                 self.mlflow_manager.log_metrics(
                     {
@@ -168,10 +106,7 @@ class ExperimentRunner:
                 self.mlflow_manager.set_tags({ "model_type":model.get_model_name() } )
         return result
 
-    def run(
-        self,
-        data: pd.DataFrame
-    ) -> pd.DataFrame:
+    def run(self,data: pd.DataFrame  ) -> pd.DataFrame:
         """
         Run all models.
         """
@@ -180,20 +115,13 @@ class ExperimentRunner:
 
         if self.mlflow_manager:
 
-            with self.mlflow_manager.start_run(
-                run_name="forecasting_experiment"
-            ):
+            with self.mlflow_manager.start_run(run_name="forecasting_experiment"):
 
                 for model in self.models:
 
-                    result = self.run_model(
-                        model=model,
-                        data=data
-                    )
+                    result = self.run_model(model=model,data=data )
 
-                    self.results.append(
-                        result
-                    )
+                    self.results.append(result )
 
                 leaderboard = pd.DataFrame(
                     [
@@ -214,38 +142,17 @@ class ExperimentRunner:
                     ]
                 )
 
-                leaderboard = (
-                    leaderboard
-                    .sort_values(
-                        self.primary_metric
-                    )
-                    .reset_index(
-                        drop=True
-                    )
-                )
+                leaderboard = ( leaderboard.sort_values( self.primary_metric ).reset_index( drop=True ) )
 
-                leaderboard.insert(
-                    0,
-                    "Rank",
-                    range(
-                        1,
-                        len(leaderboard) + 1
-                    )
-                )
+                leaderboard.insert(0,"Rank",range(1,len(leaderboard) + 1) )
 
                 self.leaderboard = leaderboard
 
-                self.mlflow_manager.log_leaderboard(
-                    leaderboard
-                )
+                self.mlflow_manager.log_leaderboard(leaderboard)
 
-                champion = (
-                    self.get_champion()
-                )
+                champion = (self.get_champion() )
 
-                self.mlflow_manager.log_champion(
-                    champion
-                )
+                self.mlflow_manager.log_champion( champion )
 
                 return leaderboard
 
@@ -253,14 +160,9 @@ class ExperimentRunner:
 
         for model in self.models:
 
-            result = self.run_model(
-                model=model,
-                data=data
-            )
+            result = self.run_model(model=model, data=data)
 
-            self.results.append(
-                result
-            )
+            self.results.append(result)
 
         leaderboard = pd.DataFrame(
             [
@@ -281,32 +183,15 @@ class ExperimentRunner:
             ]
         )
 
-        leaderboard = (
-            leaderboard
-            .sort_values(
-                self.primary_metric
-            )
-            .reset_index(
-                drop=True
-            )
-        )
+        leaderboard = (leaderboard.sort_values(self.primary_metric).reset_index(drop=True))
 
-        leaderboard.insert(
-            0,
-            "Rank",
-            range(
-                1,
-                len(leaderboard) + 1
-            )
-        )
+        leaderboard.insert(0,"Rank",range( 1, len(leaderboard) + 1))
 
         self.leaderboard = leaderboard
 
         return leaderboard
     
-    def get_leaderboard(
-        self
-    ) -> pd.DataFrame:
+    def get_leaderboard( self) -> pd.DataFrame:
 
         if self.leaderboard is None:
 
@@ -316,9 +201,7 @@ class ExperimentRunner:
 
         return self.leaderboard
 
-    def get_champion(
-        self
-    ) -> Dict[str, Any]:
+    def get_champion(self ) -> Dict[str, Any]:
         """
         Return best model.
         """
@@ -337,9 +220,7 @@ class ExperimentRunner:
 
         return champion
 
-    def get_full_results(
-        self
-    ) -> List[Dict]:
+    def get_full_results(self) -> List[Dict]:
         """
         Return detailed experiment results.
         """
