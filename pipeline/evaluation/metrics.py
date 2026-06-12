@@ -11,7 +11,6 @@ Used by:
 - MLflow Tracking
 - Model Monitoring
 
-Author: Nani
 """
 
 from typing import Dict
@@ -37,20 +36,13 @@ class ForecastMetrics:
         y_pred = np.asarray(y_pred, dtype=float)
 
         if len(y_true) == 0:
-            raise ValueError(
-                "y_true is empty."
-            )
+            raise ValueError("y_true is empty." )
 
         if len(y_pred) == 0:
-            raise ValueError(
-                "y_pred is empty."
-            )
+            raise ValueError( "y_pred is empty.")
 
         if len(y_true) != len(y_pred):
-            raise ValueError(
-                f"Shape mismatch: "
-                f"{len(y_true)} vs {len(y_pred)}"
-            )
+            raise ValueError( f"Shape mismatch: "f"{len(y_true)} vs {len(y_pred)}")
 
         mask = (
             np.isfinite(y_true)
@@ -61,9 +53,7 @@ class ForecastMetrics:
         y_pred = y_pred[mask]
 
         if len(y_true) == 0:
-            raise ValueError(
-                "No valid observations after cleaning."
-            )
+            raise ValueError("No valid observations after cleaning." )
 
         return y_true, y_pred
 
@@ -73,11 +63,7 @@ class ForecastMetrics:
 
         y_true, y_pred = ForecastMetrics._validate_inputs(y_true,y_pred)
 
-        return float(
-            np.sqrt(
-                mean_squared_error(y_true,y_pred)
-            )
-        )
+        return float(np.sqrt( mean_squared_error(y_true,y_pred) ) )
 
     @staticmethod
     def mae(y_true: np.ndarray,y_pred: np.ndarray) -> float:
