@@ -3,7 +3,7 @@ champion_trainer.py
 
 Champion model retraining.
 
-Author: Nani
+
 """
 
 from typing import Dict, Any
@@ -20,11 +20,7 @@ class ChampionTrainer:
     def __init__(self):
         pass
 
-    def retrain_champion(
-        self,
-        champion_result: Dict[str, Any],
-        full_dataset: pd.DataFrame
-    ):
+    def retrain_champion(self,champion_result: Dict[str, Any],full_dataset: pd.DataFrame):
         """
         Retrain champion model using
         the entire available dataset.
@@ -36,10 +32,7 @@ class ChampionTrainer:
 
         return model
 
-    def get_champion_summary(
-        self,
-        champion_result: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def get_champion_summary(self,champion_result: Dict[str, Any]) -> Dict[str, Any]:
         """
         Return champion metadata.
         """
@@ -54,10 +47,7 @@ class ChampionTrainer:
 
         return summary
 
-    def print_champion_summary(
-        self,
-        champion_result: Dict[str, Any]
-    ) -> None:
+    def print_champion_summary(self,champion_result: Dict[str, Any]) -> None:
         """
         Print champion information.
         """
@@ -65,18 +55,12 @@ class ChampionTrainer:
         print("\nChampion Summary")
         print("-" * 50)
 
-        print(
-            f"Model : {champion_result['model_name']}"
-        )
+        print( f"Model : {champion_result['model_name']}")
 
         print(
             f"RMSE  : {champion_result['RMSE']:.4f}"
         )
 
-        print(
-            f"MAE   : {champion_result['MAE']:.4f}"
-        )
+        print( f"MAE   : {champion_result['MAE']:.4f}" )
 
-        print(
-            f"MAPE  : {champion_result['MAPE']:.4f}"
-        )
+        print(f"MAPE  : {champion_result['MAPE']:.4f}" )
