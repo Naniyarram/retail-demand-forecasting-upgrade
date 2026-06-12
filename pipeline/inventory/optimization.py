@@ -32,11 +32,7 @@ def get_z_score(service_level: float) -> float:
     return 1.0  # Default fallback
 
 
-def calculate_safety_stock(
-    demand_std: float,
-    lead_time_weeks: float,
-    service_level: float = 0.95
-) -> float:
+def calculate_safety_stock(demand_std: float, lead_time_weeks: float, service_level: float = 0.95) -> float:
     """
     Calculate safety stock: SS = Z * std_d * sqrt(L).
     """
@@ -44,22 +40,14 @@ def calculate_safety_stock(
     return round(z * demand_std * math.sqrt(lead_time_weeks), 2)
 
 
-def calculate_reorder_point(
-    average_demand: float,
-    lead_time_weeks: float,
-    safety_stock: float
-) -> float:
+def calculate_reorder_point(average_demand: float,lead_time_weeks: float,safety_stock: float) -> float:
     """
     Calculate Reorder Point: ROP = (average_demand * lead_time_weeks) + safety_stock.
     """
     return round((average_demand * lead_time_weeks) + safety_stock, 2)
 
 
-def calculate_eoq(
-    average_weekly_demand: float,
-    holding_cost_per_unit_year: float,
-    setup_cost_per_order: float
-) -> float:
+def calculate_eoq(average_weekly_demand: float,holding_cost_per_unit_year: float,setup_cost_per_order: float) -> float:
     """
     Calculate Economic Order Quantity (EOQ): EOQ = sqrt((2 * D * S) / H).
     D is the annual demand (weekly demand * 52).
@@ -71,14 +59,7 @@ def calculate_eoq(
     return round(eoq, 2)
 
 
-def optimize_inventory(
-    forecast_demands: list[float],
-    historical_sales_std: float,
-    lead_time_weeks: float = 2.0,
-    service_level: float = 0.95,
-    holding_cost_unit_year: float = 1.5,
-    setup_cost_order: float = 50.0
-) -> Dict[str, Any]:
+def optimize_inventory(forecast_demands: list[float],historical_sales_std: float,lead_time_weeks: float = 2.0,service_level: float = 0.95,holding_cost_unit_year: float = 1.5,setup_cost_order: float = 50.0) -> Dict[str, Any]:
     """
     Generate optimized inventory settings based on demand forecast array.
     """
