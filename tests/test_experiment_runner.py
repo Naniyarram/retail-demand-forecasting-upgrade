@@ -19,11 +19,7 @@ class DummyForecaster:
     Lightweight forecasting model for runner tests.
     """
 
-    def __init__(
-        self,
-        model_name,
-        adjustment
-    ):
+    def __init__( self,model_name,adjustment ):
 
         self.model_name = model_name
 
@@ -35,37 +31,19 @@ class DummyForecaster:
 
         self.metrics = {}
 
-    def fit(
-        self,
-        train_df
-    ):
+    def fit(  self,  train_df ):
 
-        self.last_value = float(
-            train_df["Weekly_Sales"].iloc[-1]
-        )
+        self.last_value = float( train_df["Weekly_Sales"].iloc[-1] )
 
         self.is_trained = True
 
-    def predict(
-        self,
-        horizon
-    ):
+    def predict( self, horizon ):
 
-        return np.full(
-            horizon,
-            self.last_value + self.adjustment
-        )
+        return np.full(horizon, self.last_value + self.adjustment   )
 
-    def evaluate(
-        self,
-        y_true,
-        y_pred
-    ):
+    def evaluate(self,y_true,y_pred ):
 
-        self.metrics = ForecastMetrics.evaluate(
-            y_true,
-            y_pred
-        )
+        self.metrics = ForecastMetrics.evaluate( y_true, y_pred )
 
         return self.metrics
 
@@ -83,24 +61,12 @@ class DummyForecaster:
 @pytest.fixture
 def sample_data():
 
-    dates = pd.date_range(
-        start="2020-01-05",
-        periods=90,
-        freq="W"
-    )
+    dates = pd.date_range(start="2020-01-05", periods=90, freq="W" )
 
-    sales = np.linspace(
-        1000,
-        1300,
-        90
-    )
+    sales = np.linspace( 1000, 1300,   90)
 
     return pd.DataFrame(
-        {
-            "Date": dates,
-            "Weekly_Sales": sales
-        }
-    )
+        { "Date": dates,"Weekly_Sales": sales })
 
 
 @pytest.fixture
@@ -122,34 +88,20 @@ def models():
     ]
 
 
-def test_run_experiments(
-    sample_data,
-    models
-):
+def test_run_experiments( sample_data,  models):
 
-    runner = ExperimentRunner(
-        models=models
-    )
+    runner = ExperimentRunner(   models=models )
 
-    leaderboard = runner.run(
-        sample_data
-    )
+    leaderboard = runner.run(sample_data )
 
     assert len(leaderboard) == 3
 
 
-def test_leaderboard_columns(
-    sample_data,
-    models
-):
+def test_leaderboard_columns(sample_data,models):
 
-    runner = ExperimentRunner(
-        models=models
-    )
+    runner = ExperimentRunner( models=models  )
 
-    leaderboard = runner.run(
-        sample_data
-    )
+    leaderboard = runner.run( sample_data)
 
     expected_columns = [
         "Rank",
@@ -164,36 +116,22 @@ def test_leaderboard_columns(
         assert col in leaderboard.columns
 
 
-def test_champion_selection(
-    sample_data,
-    models
-):
+def test_champion_selection( sample_data, models):
 
-    runner = ExperimentRunner(
-        models=models
-    )
+    runner = ExperimentRunner( models=models )
 
-    runner.run(
-        sample_data
-    )
+    runner.run(   sample_data)
 
     champion = runner.get_champion()
 
     assert "model_name" in champion
 
 
-def test_full_results(
-    sample_data,
-    models
-):
+def test_full_results(sample_data, models):
 
-    runner = ExperimentRunner(
-        models=models
-    )
+    runner = ExperimentRunner( models=models )
 
-    runner.run(
-        sample_data
-    )
+    runner.run( sample_data)
 
     results = runner.get_full_results()
 
