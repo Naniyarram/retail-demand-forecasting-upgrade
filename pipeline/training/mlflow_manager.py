@@ -13,7 +13,6 @@ Future:
 - Model Registry
 - Champion Promotion
 
-Author: Nani
 """
 
 from pathlib import Path
@@ -27,67 +26,33 @@ import pandas as pd
 
 class MLflowManager:
 
-    def __init__(
-        self,
-        experiment_name: str
-    ):
+    def __init__(self,experiment_name: str):
         import os
         if not os.getenv("MLFLOW_TRACKING_URI"):
-            tracking_dir = Path(
-                "artifacts/mlflow_runs"
-            )
+            tracking_dir = Path( "artifacts/mlflow_runs")
 
-            tracking_dir.mkdir(
-                parents=True,
-                exist_ok=True
-            )
+            tracking_dir.mkdir(parents=True,exist_ok=True)
 
-            mlflow.set_tracking_uri(
-                tracking_dir.resolve().as_uri()
-            )
+            mlflow.set_tracking_uri(tracking_dir.resolve().as_uri() )
+        self.experiment_name = ( experiment_name)
 
-        self.experiment_name = (
-            experiment_name
-        )
+        mlflow.set_experiment(experiment_name )
 
-        mlflow.set_experiment(
-            experiment_name
-        )
+    def start_run(self,run_name: Optional[str] = None,nested: bool = False):
 
-    def start_run(
-        self,
-        run_name: Optional[str] = None,
-        nested: bool = False
-    ):
+        return mlflow.start_run(run_name=run_name,nested=nested)
 
-        return mlflow.start_run(
-            run_name=run_name,
-            nested=nested
-        )
-
-    def log_params(
-        self,
-        params: Dict[str, Any]
-    ):
+    def log_params(self,params: Dict[str, Any]):
 
         mlflow.log_params(
             params
         )
 
-    def log_metrics(
-        self,
-        metrics: Dict[str, float]
-    ):
+    def log_metrics(self,metrics: Dict[str, float]):
 
-        mlflow.log_metrics(
-            metrics
-        )
+        mlflow.log_metrics(metrics)
 
-    def log_leaderboard(
-        self,
-        leaderboard: pd.DataFrame,
-        artifact_path: str = "leaderboard"
-    ):
+    def log_leaderboard(self,leaderboard: pd.DataFrame,artifact_path: str = "leaderboard"):
 
         output_path = (
             Path(
@@ -111,12 +76,7 @@ class MLflowManager:
             artifact_path=artifact_path
         )
 
-    def log_dataframe(
-        self,
-        df: pd.DataFrame,
-        filename: str,
-        artifact_path: str
-    ):
+    def log_dataframe(self,df: pd.DataFrame,filename: str,artifact_path: str):
 
         output_path = (
             Path("artifacts")
@@ -138,10 +98,7 @@ class MLflowManager:
             artifact_path=artifact_path
         )
 
-    def log_champion(
-        self,
-        champion: Dict[str, Any]
-    ):
+    def log_champion(self,champion: Dict[str, Any]):
 
         champion_metrics = {
 
@@ -164,17 +121,12 @@ class MLflowManager:
             champion["model_name"]
         )
 
-    def set_tags(
-        self,
-        tags: Dict[str, str]
-    ):
+    def set_tags(self,tags: Dict[str, str]):
 
         mlflow.set_tags(
             tags
         )
 
-    def end_run(
-        self
-    ):
+    def end_run(self):
 
         mlflow.end_run()
