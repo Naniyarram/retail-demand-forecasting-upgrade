@@ -5,8 +5,6 @@ FastAPI application for serving champion forecasts.
 
 Run locally:
     uvicorn pipeline.api.app:app --host 0.0.0.0 --port 8000
-
-Author: Nani
 """
 
 from contextlib import asynccontextmanager
@@ -16,19 +14,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from pipeline.api.forecast_service import ForecastService
-from pipeline.api.schemas import (
-    ForecastRequest,
-    ForecastResponse,
-    HealthResponse,
-    ModelMetadataResponse,
-    InventoryOptimizeRequest,
-    InventoryOptimizeResponse,
-    RiskClassifyRequest,
-    RiskClassifyResponse,
-    LLMRecommendationRequest,
-    LLMRecommendationResponse,
-    MetricsResponse
-)
+from pipeline.api.schemas import (ForecastRequest,ForecastResponse,HealthResponse,ModelMetadataResponse,InventoryOptimizeRequest,InventoryOptimizeResponse,RiskClassifyRequest,RiskClassifyResponse,
+LLMRecommendationRequest, LLMRecommendationResponse, MetricsResponse)
+
 from pipeline.inventory.optimization import optimize_inventory
 from pipeline.inventory.risk import classify_risk
 from pipeline.utils.llm_client import HFLLMClient
@@ -142,9 +130,7 @@ def model_metadata() -> ModelMetadataResponse:
     "/forecast",
     response_model=ForecastResponse
 )
-def forecast(
-    request: ForecastRequest
-) -> ForecastResponse:
+def forecast(request: ForecastRequest) -> ForecastResponse:
     """
     Generate a demand forecast.
     """
@@ -154,50 +140,29 @@ def forecast(
             forecast_horizon=request.forecast_horizon
         )
     except FileNotFoundError as exc:
-        raise HTTPException(
-            status_code=503,
-            detail=str(exc)
-        ) from exc
+        raise HTTPException(status_code=503,detail=str(exc)) from exc
     except (TypeError, ValueError) as exc:
-        raise HTTPException(
-            status_code=400,
-            detail=str(exc)
-        ) from exc
+        raise HTTPException(status_code=400,detail=str(exc)  ) from exc
 
-    return ForecastResponse(
-        model_name=forecast_service.get_model_name(),
-        forecast_horizon=request.forecast_horizon,
-        forecast=predictions,
-        store_id=request.store_id,
-        department_id=request.department_id
-    )
+    return ForecastResponse(model_name=forecast_service.get_model_name(),forecast_horizon=request.forecast_horizon,forecast=predictions,store_id=request.store_id,
+        department_id=request.department_id )
 
 
 @app.post(
     "/inventory/optimize",
     response_model=InventoryOptimizeResponse
 )
-def optimize_inventory_endpoint(
-    request: InventoryOptimizeRequest
-) -> InventoryOptimizeResponse:
+def optimize_inventory_endpoint(request: InventoryOptimizeRequest) -> InventoryOptimizeResponse:
     """
     Perform safety stock, ROP, and EOQ calculations.
     """
     track_metric("/inventory/optimize")
     try:
-        results = optimize_inventory(
-            forecast_demands=request.forecast_demands,
-            historical_sales_std=request.historical_sales_std,
-            lead_time_weeks=request.lead_time_weeks,
-            service_level=request.service_level,
-            holding_cost_unit_year=request.holding_cost_unit_year,
-            setup_cost_order=request.setup_cost_order
+        results = optimize_inventory( forecast_demands=request.forecast_demands, historical_sales_std=request.historical_sales_std, lead_time_weeks=request.lead_time_weeks,
+            service_level=request.service_level,holding_cost_unit_year=request.holding_cost_unit_year, setup_cost_order=request.setup_cost_order
         )
     except ValueError as exc:
-        raise HTTPException(
-            status_code=400,
-            detail=str(exc)
-        ) from exc
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     return InventoryOptimizeResponse(**results)
 
@@ -206,9 +171,7 @@ def optimize_inventory_endpoint(
     "/inventory/risk",
     response_model=RiskClassifyResponse
 )
-def classify_risk_endpoint(
-    request: RiskClassifyRequest
-) -> RiskClassifyResponse:
+def classify_risk_endpoint(request: RiskClassifyRequest) -> RiskClassifyResponse:
     """
     Classify stockout and overstock risk levels.
     """
@@ -226,9 +189,7 @@ def classify_risk_endpoint(
     "/decision/recommendations",
     response_model=LLMRecommendationResponse
 )
-def generate_recommendations(
-    request: LLMRecommendationRequest
-) -> LLMRecommendationResponse:
+def generate_recommendations( request: LLMRecommendationRequest) -> LLMRecommendationResponse:
     """
     Generate natural language retail insights and recommendations using Llama 3.1 8B.
     """
@@ -257,9 +218,7 @@ def get_metrics() -> MetricsResponse:
     Expose serving usage and model loading status metrics.
     """
     track_metric("/monitoring/metrics")
-    return MetricsResponse(
-        total_requests=system_metrics["total_requests"],
-        requests_by_endpoint=system_metrics["requests_by_endpoint"],
+    return MetricsResponse(total_requests=system_metrics["total_requests"],requests_by_endpoint=system_metrics["requests_by_endpoint"],
         model_loaded=forecast_service.is_model_loaded(),
         active_model_name=(
             forecast_service.get_model_name()
