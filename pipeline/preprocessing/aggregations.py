@@ -9,7 +9,6 @@ Supports:
 2. Store Forecasting
 3. Store + Department Forecasting
 
-Author: Nani
 """
 
 from typing import Optional
@@ -32,9 +31,7 @@ class WalmartAggregator:
         missing = required_columns - set(df.columns)
 
         if missing:
-            raise ValueError(
-                f"Missing columns: {missing}"
-            )
+            raise ValueError(f"Missing columns: {missing}" )
 
     @staticmethod
     def _prepare_output(df: pd.DataFrame) -> pd.DataFrame:
@@ -48,12 +45,7 @@ class WalmartAggregator:
 
         df = (df.sort_values(DATE_COLUMN).reset_index(drop=True))
 
-        return df[
-            [
-                DATE_COLUMN,
-                TARGET_COLUMN
-            ]
-        ]
+        return df[ [DATE_COLUMN,TARGET_COLUMN ] ]
 
     def get_company_sales(self,df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -65,8 +57,7 @@ class WalmartAggregator:
 
         self._validate_dataframe(df)
 
-        result = (
-            df.groupby(DATE_COLUMN)[TARGET_COLUMN].sum().reset_index())
+        result = (df.groupby(DATE_COLUMN)[TARGET_COLUMN].sum().reset_index())
 
         return self._prepare_output(result)
 
@@ -106,11 +97,7 @@ class WalmartAggregator:
         )
 
         if result.empty:
-            raise ValueError(
-                f"No data found for "
-                f"Store={store_id}, "
-                f"Dept={dept_id}"
-            )
+            raise ValueError(  f"No data found for " f"Store={store_id}, " f"Dept={dept_id}" )
 
         return self._prepare_output(result)
 
@@ -126,7 +113,7 @@ class WalmartAggregator:
         self._validate_dataframe(df)
 
         return (
-            df.groupby("Store")[TARGET_COLUMN]
+        df.groupby("Store")[TARGET_COLUMN]
             .sum()
             .sort_values(ascending=False)
             .head(top_n)
