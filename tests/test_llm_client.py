@@ -3,7 +3,6 @@ test_llm_client.py
 
 Unit tests for the Hugging Face serverless LLM client.
 
-Author: Nani
 """
 
 import pytest
