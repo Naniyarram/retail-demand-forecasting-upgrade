@@ -9,7 +9,6 @@ Used by:
 - XGBoost
 - Experiment Runner
 
-Author: Nani
 """
 
 from typing import Generator
@@ -20,10 +19,7 @@ import pandas as pd
 
 from sklearn.model_selection import TimeSeriesSplit
 
-from pipeline.config.settings import (
-    FORECAST_HORIZON,
-    N_SPLITS
-)
+from pipeline.config.settings import ( FORECAST_HORIZON, N_SPLITS)
 
 
 class WalkForwardValidator:
@@ -41,18 +37,11 @@ class WalkForwardValidator:
         Test  -> Next Future Window
     """
 
-    def __init__(
-        self,
-        n_splits: int = N_SPLITS,
-        forecast_horizon: int = FORECAST_HORIZON
-    ):
+    def __init__(self,n_splits: int = N_SPLITS,forecast_horizon: int = FORECAST_HORIZON ):
         self.n_splits = n_splits
         self.forecast_horizon = forecast_horizon
 
-    def split(
-        self,
-        df: pd.DataFrame
-    ) -> Generator[
+    def split(self,df: pd.DataFrame ) -> Generator[
         Tuple[np.ndarray, np.ndarray],
         None,
         None
@@ -66,9 +55,7 @@ class WalkForwardValidator:
         """
 
         if len(df) == 0:
-            raise ValueError(
-                "Input dataframe is empty."
-            )
+            raise ValueError("Input dataframe is empty." )
 
         tscv = TimeSeriesSplit(
             n_splits=self.n_splits,
@@ -79,10 +66,7 @@ class WalkForwardValidator:
 
             yield train_idx, test_idx
 
-    def get_fold_summary(
-        self,
-        df: pd.DataFrame
-    ) -> pd.DataFrame:
+    def get_fold_summary( self,df: pd.DataFrame ) -> pd.DataFrame:
         """
         Generate fold information.
 
