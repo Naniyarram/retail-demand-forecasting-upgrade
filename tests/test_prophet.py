@@ -19,14 +19,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from pipeline.forecasting.prophet import (
-    ProphetForecaster
-)
+from pipeline.forecasting.prophet import ( ProphetForecaster)
 
 
-@pytest.fixture(
-    scope="module"
-)
+@pytest.fixture(scope="module")
 def sample_data():
     """
     Generate realistic weekly sales data.
@@ -39,11 +35,7 @@ def sample_data():
 
     np.random.seed(42)
 
-    dates = pd.date_range(
-        start="2020-01-05",
-        periods=120,
-        freq="W"
-    )
+    dates = pd.date_range(  start="2020-01-05",  periods=120, freq="W" )
 
     sales = (
         1000
@@ -59,11 +51,7 @@ def sample_data():
     )
 
     return pd.DataFrame(
-        {
-            "Date": dates,
-            "Weekly_Sales": sales
-        }
-    )
+        { "Date": dates,"Weekly_Sales": sales } )
 
 
 @pytest.fixture(
@@ -88,9 +76,7 @@ def test_predict(trained_model):
 
     horizon = 12
 
-    predictions = trained_model.predict(
-        horizon=horizon
-    )
+    predictions = trained_model.predict( horizon=horizon )
 
     assert len(predictions) == horizon
 
@@ -138,22 +124,16 @@ def test_load_model(trained_model):
             str(model_path)
         )
 
-        loaded_model = (
-            ProphetForecaster()
-        )
+        loaded_model = ( ProphetForecaster() )
 
-        loaded_model.load_model(
-            str(model_path)
-        )
+        loaded_model.load_model(   str(model_path) )
 
         assert (
             loaded_model.is_trained
             is True
         )
 
-        preds = loaded_model.predict(
-            horizon=5
-        )
+        preds = loaded_model.predict( horizon=5 )
 
         assert len(preds) == 5
 
@@ -162,9 +142,7 @@ def test_predict_before_fit():
 
     model = ProphetForecaster()
 
-    with pytest.raises(
-        RuntimeError
-    ):
+    with pytest.raises(  RuntimeError  ):
         model.predict(5)
 
 
@@ -172,9 +150,7 @@ def test_save_before_fit():
 
     model = ProphetForecaster()
 
-    with pytest.raises(
-        RuntimeError
-    ):
+    with pytest.raises(RuntimeError ):
         model.save_model(
             "dummy.pkl"
         )
