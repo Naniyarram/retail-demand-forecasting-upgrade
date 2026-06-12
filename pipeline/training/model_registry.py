@@ -10,8 +10,6 @@ Responsibilities
 - Retrieve Registered Models
 - List Versions
 - Rollback Champion Alias
-
-Author: Nani
 """
 
 from typing import List
@@ -31,11 +29,7 @@ class ModelRegistryManager:
 
         self.client = MlflowClient()
 
-    def register_model(
-        self,
-        model_uri: str,
-        registered_model_name: str
-    ) -> int:
+    def register_model(self,model_uri: str,registered_model_name: str) -> int:
         """
         Register model in MLflow Registry.
 
@@ -45,21 +39,11 @@ class ModelRegistryManager:
             Registered version number.
         """
 
-        model_version = mlflow.register_model(
-            model_uri=model_uri,
-            name=registered_model_name
-        )
+        model_version = mlflow.register_model(model_uri=model_uri,name=registered_model_name)
 
-        return int(
-            model_version.version
-        )
+        return int( model_version.version)
 
-    def set_alias(
-        self,
-        model_name: str,
-        version: int,
-        alias: str
-    ) -> None:
+    def set_alias(self,model_name: str,version: int,alias: str) -> None:
         """
         Assign alias to model version.
 
@@ -69,30 +53,16 @@ class ModelRegistryManager:
         challenger
         """
 
-        self.client.set_registered_model_alias(
-            name=model_name,
-            alias=alias,
-            version=str(version)
-        )
+        self.client.set_registered_model_alias( name=model_name, alias=alias, version=str(version))
 
-    def get_model_by_alias(
-        self,
-        model_name: str,
-        alias: str = "champion"
-    ):
+    def get_model_by_alias(self,model_name: str,alias: str = "champion"):
         """
         Retrieve model version by alias.
         """
 
-        return self.client.get_model_version_by_alias(
-            name=model_name,
-            alias=alias
-        )
+        return self.client.get_model_version_by_alias(name=model_name, alias=alias)
 
-    def get_champion_version(
-        self,
-        model_name: str
-    ) -> Optional[int]:
+    def get_champion_version(self,model_name: str) -> Optional[int]:
         """
         Get current champion version.
         """
@@ -113,10 +83,7 @@ class ModelRegistryManager:
 
             return None
 
-    def list_versions(
-        self,
-        model_name: str
-    ) -> List[Dict]:
+    def list_versions( self, model_name: str ) -> List[Dict]:
         """
         List all registered versions.
         """
@@ -136,27 +103,15 @@ class ModelRegistryManager:
             for v in versions
         ]
 
-    def promote_to_champion(
-        self,
-        model_name: str,
-        version: int
-    ) -> None:
+    def promote_to_champion(self,model_name: str, version: int ) -> None:
         """
         Promote model version
         to champion alias.
         """
 
-        self.set_alias(
-            model_name=model_name,
-            version=version,
-            alias="champion"
-        )
+        self.set_alias(model_name=model_name,version=version,alias="champion")
 
-    def promote_to_challenger(
-        self,
-        model_name: str,
-        version: int
-    ) -> None:
+    def promote_to_challenger(self,model_name: str,version: int) -> None:
         """
         Promote model version
         to challenger alias.
@@ -168,17 +123,9 @@ class ModelRegistryManager:
             alias="challenger"
         )
 
-    def rollback_champion(
-        self,
-        model_name: str,
-        version: int
-    ) -> None:
+    def rollback_champion(self,model_name: str,version: int ) -> None:
         """
         Rollback champion alias.
         """
 
-        self.set_alias(
-            model_name=model_name,
-            version=version,
-            alias="champion"
-        )
+        self.set_alias(model_name=model_name,version=version,alias="champion")
