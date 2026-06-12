@@ -3,7 +3,6 @@ test_model_packager.py
 
 Unit tests for ModelPackager.
 
-Author: Nani
 """
 
 from pathlib import Path
