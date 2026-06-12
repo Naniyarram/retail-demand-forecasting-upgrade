@@ -9,12 +9,7 @@ Author: Nani
 from typing import Dict, Any
 
 
-def classify_risk(
-    current_inventory: float,
-    reorder_point: float,
-    safety_stock: float,
-    total_forecasted_demand: float
-) -> Dict[str, Any]:
+def classify_risk(current_inventory: float,reorder_point: float,safety_stock: float, total_forecasted_demand: float) -> Dict[str, Any]:
     """
     Classifies stock-out and overstock risks based on current inventory levels,
     safety stock, reorder point, and forecasted demand.
